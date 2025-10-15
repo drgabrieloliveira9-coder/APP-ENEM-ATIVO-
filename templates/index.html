@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h1 class="text-5xl font-bold text-white mb-4 glow-text">Bem-vindo ao ENEM 2025 StudyApp</h1>
+    <p class="text-xl text-gray-400">Sua plataforma completa de estudos para o ENEM 2025</p>
+    <div class="mt-6 inline-block card rounded-lg px-6 py-3">
+        <p class="text-lg font-semibold text-blue-400">🎯 {{ total_resumos }}+ Resumos Disponíveis</p>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    {% for area in areas %}
+    <a href="/area/{{ area.id }}" class="block card rounded-xl p-6 group">
+        <div class="text-5xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
+            {% if 'Linguagens' in area.name %}📖
+            {% elif 'Matemática' in area.name %}🔢
+            {% elif 'Humanas' in area.name %}🌍
+            {% else %}🔬{% endif %}
+        </div>
+        <h3 class="text-lg font-bold text-blue-300 mb-2 group-hover:text-blue-400 transition-colors">{{ area.name }}</h3>
+        <p class="text-sm text-gray-400">{{ area.description }}</p>
+    </a>
+    {% endfor %}
+</div>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="card rounded-xl p-6 group">
+        <h3 class="text-xl font-bold text-blue-300 mb-3 group-hover:text-blue-400 transition-colors">📝 Exercícios</h3>
+        <p class="text-gray-400 mb-4">Questões com perguntas E respostas explicadas</p>
+        <a href="/exercicios" class="inline-block btn-primary text-white px-6 py-2 rounded-lg font-semibold">Praticar</a>
+    </div>
+    
+    <div class="card rounded-xl p-6 group">
+        <h3 class="text-xl font-bold text-blue-300 mb-3 group-hover:text-blue-400 transition-colors">✍️ Redação ENEM</h3>
+        <p class="text-gray-400 mb-4">Escreva e receba feedback automático com nota estimada</p>
+        <a href="/redacao" class="inline-block btn-primary text-white px-6 py-2 rounded-lg font-semibold">Começar</a>
+    </div>
+    
+    <div class="card rounded-xl p-6 group">
+        <h3 class="text-xl font-bold text-blue-300 mb-3 group-hover:text-blue-400 transition-colors">🗺️ Mapas Mentais</h3>
+        <p class="text-gray-400 mb-4">Visualize conteúdos de forma organizada</p>
+        <a href="/mapas" class="inline-block btn-primary text-white px-6 py-2 rounded-lg font-semibold">Ver Mapas</a>
+    </div>
+    
+    <div class="card rounded-xl p-6 group">
+        <h3 class="text-xl font-bold text-blue-300 mb-3 group-hover:text-blue-400 transition-colors">📅 Cronograma</h3>
+        <p class="text-gray-400 mb-4">Organize seus estudos e exporte para CSV</p>
+        <a href="/cronograma" class="inline-block btn-primary text-white px-6 py-2 rounded-lg font-semibold">Criar Plano</a>
+    </div>
+</div>
+{% endblock %}

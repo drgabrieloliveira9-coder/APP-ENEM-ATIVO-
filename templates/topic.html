@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.title }} - ENEM 2025 StudyApp{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="javascript:history.back()" class="text-blue-400 hover:text-blue-300 transition-colors">← Voltar</a>
+</div>
+
+<div class="card rounded-xl p-8">
+    <h1 class="text-3xl font-bold text-white mb-6 glow-text">{{ topic.title }}</h1>
+    
+    <div class="prose max-w-none mb-8">
+        <p class="text-gray-300">{{ topic.content }}</p>
+    </div>
+
+    {% if resumo %}
+    <div class="card rounded-xl p-6 mb-6 border border-blue-700">
+        <h2 class="text-2xl font-bold text-blue-300 mb-4">📝 Resumo Direto</h2>
+        <p class="text-gray-400 mb-4">{{ resumo.summary }}</p>
+        
+        {% if resumo.bullets %}
+        <h3 class="font-bold text-blue-400 mb-2">Pontos-chave:</h3>
+        <ul class="list-disc list-inside space-y-1 mb-4">
+            {% for bullet in resumo.bullets.split('|') %}
+            <li class="text-gray-400">{{ bullet }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if resumo.quick_tip %}
+        <div class="bg-yellow-950/30 border-l-4 border-yellow-500 p-3 mt-4 rounded">
+            <p class="text-sm text-gray-300">💡 <strong class="text-yellow-400">Dica rápida:</strong> {{ resumo.quick_tip }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if explicacao %}
+    <div class="card rounded-xl p-6 mb-6 border border-blue-700">
+        <h2 class="text-2xl font-bold text-blue-300 mb-4">📚 Explicação Detalhada</h2>
+        <div class="text-gray-400 whitespace-pre-line mb-4">{{ explicacao.conteudo_detalhado }}</div>
+        
+        {% if explicacao.exemplos %}
+        <div class="bg-slate-900/50 rounded-lg p-4 mb-4">
+            <h3 class="font-bold text-blue-400 mb-2">📋 Exemplos Práticos:</h3>
+            <p class="text-gray-400">{{ explicacao.exemplos }}</p>
+        </div>
+        {% endif %}
+        
+        {% if explicacao.dicas %}
+        <div class="bg-green-950/30 border-l-4 border-green-500 p-3 rounded">
+            <p class="text-sm text-gray-300">{{ explicacao.dicas }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="flex gap-4">
+        <button onclick="markCompleted({{ topic.id }})" class="btn-primary text-white px-6 py-2 rounded-lg">
+            ✓ Marcar como concluído
+        </button>
+        
+        {% if questoes_count > 0 %}
+        <a href="/exercicios/area/{{ topic.area_id }}" class="inline-block bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-orange-700 hover:to-orange-600 transition-all">
+            📝 Fazer Exercícios ({{ questoes_count }})
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function markCompleted(topicId) {
+    fetch('/api/progress', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({topic_id: topicId, user_name: 'Usuário', completed: 1})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            alert('✅ Tópico marcado como concluído!');
+        }
+    });
+}
+</script>
+{% endblock %}

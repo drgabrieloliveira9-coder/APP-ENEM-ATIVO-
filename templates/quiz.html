@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz ENEM - ENEM 2025 StudyApp{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    {% if not quiz_started %}
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-white mb-4 glow-text">🎯 Quiz ENEM 2025</h1>
+        <p class="text-xl text-gray-400 mb-8">Teste seus conhecimentos e descubra se está preparado para o ENEM!</p>
+        
+        <div class="card rounded-xl p-8 mb-8">
+            <h2 class="text-2xl font-bold text-blue-300 mb-6">Escolha a quantidade de questões:</h2>
+            
+            <form method="POST" action="/quiz/start" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="num_questions" value="10" class="hidden peer" required>
+                        <div class="border-4 border-blue-900 peer-checked:border-blue-500 peer-checked:bg-blue-950/50 rounded-lg p-6 transition transform hover:scale-105 bg-slate-900/50">
+                            <div class="text-5xl mb-2">⚡</div>
+                            <div class="text-2xl font-bold text-blue-300">10 Questões</div>
+                            <div class="text-gray-400 mt-2">Quiz Rápido</div>
+                        </div>
+                    </label>
+                    
+                    <label class="cursor-pointer">
+                        <input type="radio" name="num_questions" value="20" class="hidden peer" checked>
+                        <div class="border-4 border-blue-900 peer-checked:border-blue-500 peer-checked:bg-blue-950/50 rounded-lg p-6 transition transform hover:scale-105 bg-slate-900/50">
+                            <div class="text-5xl mb-2">🎯</div>
+                            <div class="text-2xl font-bold text-blue-300">20 Questões</div>
+                            <div class="text-gray-400 mt-2">Quiz Médio</div>
+                        </div>
+                    </label>
+                    
+                    <label class="cursor-pointer">
+                        <input type="radio" name="num_questions" value="30" class="hidden peer">
+                        <div class="border-4 border-blue-900 peer-checked:border-blue-500 peer-checked:bg-blue-950/50 rounded-lg p-6 transition transform hover:scale-105 bg-slate-900/50">
+                            <div class="text-5xl mb-2">🔥</div>
+                            <div class="text-2xl font-bold text-blue-300">30 Questões</div>
+                            <div class="text-gray-400 mt-2">Quiz Completo</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary text-white px-12 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105">
+                    Iniciar Quiz →
+                </button>
+            </form>
+        </div>
+        
+        <div class="card rounded-xl p-6 border border-blue-700">
+            <h3 class="text-lg font-bold text-blue-300 mb-3">📊 Informações do Quiz</h3>
+            <ul class="text-left space-y-2 text-gray-400">
+                <li>✓ <strong class="text-blue-400">1500 questões</strong> disponíveis de todas as áreas do ENEM</li>
+                <li>✓ Questões aleatórias de <strong class="text-blue-400">Linguagens, Matemática, Humanas e Natureza</strong></li>
+                <li>✓ Pontuação mínima para aprovação: <strong class="text-blue-400">60%</strong></li>
+                <li>✓ Resultado instantâneo com feedback detalhado</li>
+            </ul>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="card rounded-xl p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-white glow-text">Quiz ENEM 2025</h1>
+            <div class="text-xl font-bold text-blue-400">
+                Questão <span id="current-question">1</span> de {{ questions|length }}
+            </div>
+        </div>
+        
+        <div class="mb-6">
+            <div class="w-full bg-slate-900 rounded-full h-3 border border-blue-900">
+                <div id="progress-bar" class="bg-gradient-to-r from-blue-600 to-blue-400 h-3 rounded-full transition-all duration-300" style="width: {{ (100 / questions|length)|round }}%"></div>
+            </div>
+        </div>
+        
+        <form method="POST" action="/quiz/submit" id="quiz-form">
+            <input type="hidden" name="num_questions" value="{{ questions|length }}">
+            
+            {% for question in questions %}
+            {% set question_num = loop.index %}
+            <div class="question-container {% if question_num != 1 %}hidden{% endif %}" data-question="{{ question_num }}">
+                <div class="mb-6">
+                    <div class="bg-gradient-to-r from-blue-950/50 to-slate-900/50 rounded-lg p-6 border-l-4 border-blue-500">
+                        <p class="text-lg text-gray-200 leading-relaxed">{{ question.pergunta }}</p>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="question_{{ question_num }}" value="{{ question.id }}">
+                
+                <div class="space-y-3 mb-6">
+                    {% for option in ['A', 'B', 'C', 'D', 'E'] %}
+                    <label class="block cursor-pointer option-label">
+                        <input type="radio" name="answer_{{ question_num }}" value="{{ option }}" class="hidden peer">
+                        <div class="border-2 border-blue-900 peer-checked:border-blue-500 peer-checked:bg-blue-950/50 rounded-lg p-4 transition hover:border-blue-600 bg-slate-900/30">
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-400 mr-3">{{ option }})</span>
+                                <span class="text-gray-300">
+                                    {% if option == 'A' %}{{ question.opcao_a }}
+                                    {% elif option == 'B' %}{{ question.opcao_b }}
+                                    {% elif option == 'C' %}{{ question.opcao_c }}
+                                    {% elif option == 'D' %}{{ question.opcao_d }}
+                                    {% else %}{{ question.opcao_e }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between">
+                    {% if question_num > 1 %}
+                    <button type="button" onclick="previousQuestion({{ question_num }})" class="bg-slate-700 text-white px-6 py-3 rounded-lg hover:bg-slate-600 transition">
+                        ← Anterior
+                    </button>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+                    
+                    {% if question_num < questions|length %}
+                    <button type="button" onclick="nextQuestion({{ question_num }})" class="btn-primary text-white px-6 py-3 rounded-lg transition">
+                        Próxima →
+                    </button>
+                    {% else %}
+                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg transition transform hover:scale-105 font-bold">
+                        Finalizar Quiz ✓
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+let currentQuestion = 1;
+const totalQuestions = {{ questions|length if quiz_started else 0 }};
+
+function nextQuestion(current) {
+    const currentAnswer = document.querySelector(`input[name="answer_${current}"]:checked`);
+    if (!currentAnswer) {
+        alert('Por favor, selecione uma resposta antes de continuar!');
+        return;
+    }
+    
+    const currentContainer = document.querySelector(`[data-question="${current}"]`);
+    const nextContainer = document.querySelector(`[data-question="${current + 1}"]`);
+    
+    if (currentContainer && nextContainer) {
+        currentContainer.classList.add('hidden');
+        nextContainer.classList.remove('hidden');
+        currentQuestion = current + 1;
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+}
+
+function previousQuestion(current) {
+    const currentContainer = document.querySelector(`[data-question="${current}"]`);
+    const prevContainer = document.querySelector(`[data-question="${current - 1}"]`);
+    
+    if (currentContainer && prevContainer) {
+        currentContainer.classList.add('hidden');
+        prevContainer.classList.remove('hidden');
+        currentQuestion = current - 1;
+        updateProgress();
+        window.scrollTo(0, 0);
+    }
+}
+
+function updateProgress() {
+    const currentElement = document.getElementById('current-question');
+    const progressBar = document.getElementById('progress-bar');
+    
+    if (currentElement) {
+        currentElement.textContent = currentQuestion;
+    }
+    
+    if (progressBar && totalQuestions > 0) {
+        const progressPercent = (currentQuestion / totalQuestions) * 100;
+        progressBar.style.width = progressPercent + '%';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const quizForm = document.getElementById('quiz-form');
+    
+    if (quizForm) {
+        quizForm.addEventListener('submit', function(e) {
+            for (let i = 1; i <= totalQuestions; i++) {
+                const answer = document.querySelector(`input[name="answer_${i}"]:checked`);
+                if (!answer) {
+                    e.preventDefault();
+                    alert(`Por favor, responda a questão ${i} antes de finalizar!`);
+                    
+                    const questionContainer = document.querySelector(`[data-question="${i}"]`);
+                    if (questionContainer) {
+                        document.querySelectorAll('.question-container').forEach(q => q.classList.add('hidden'));
+                        questionContainer.classList.remove('hidden');
+                        currentQuestion = i;
+                        updateProgress();
+                        window.scrollTo(0, 0);
+                    }
+                    return false;
+                }
+            }
+        });
+    }
+    
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const name = this.getAttribute('name');
+            document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                if (r !== this) {
+                    r.checked = false;
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Mapas Mentais - ENEM 2025 StudyApp{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-white mb-8 text-center glow-text">🗺️ Mapas Mentais ENEM 2025</h1>
+
+<style>
+    .mind-map-container {
+        min-height: 800px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 40px 0;
+    }
+    
+    .central-topic {
+        position: absolute;
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        color: white;
+        padding: 24px 48px;
+        border-radius: 16px;
+        font-weight: bold;
+        font-size: 20px;
+        z-index: 10;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+        cursor: default;
+        transition: transform 0.3s ease;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .central-topic:hover {
+        transform: translate(-50%, -50%) scale(1.05);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.7);
+    }
+    
+    .topic-node {
+        position: absolute;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 10px;
+        padding: 14px 24px;
+        font-size: 14px;
+        color: #e5e7eb;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        z-index: 5;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        max-width: 220px;
+        text-align: center;
+        border: 2px solid transparent;
+        display: block;
+        text-decoration: none;
+    }
+    
+    .topic-node:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(59, 130, 246, 0.6);
+        border-color: #3b82f6;
+        text-decoration: none;
+        background: linear-gradient(135deg, #1e40af 0%, #1e293b 100%);
+    }
+    
+    .topic-node.color-red {
+        border-left: 5px solid #EF4444;
+    }
+    
+    .topic-node.color-blue {
+        border-left: 5px solid #3B82F6;
+    }
+    
+    .topic-node.color-green {
+        border-left: 5px solid #10B981;
+    }
+    
+    .topic-node.color-yellow {
+        border-left: 5px solid #F59E0B;
+    }
+    
+    .topic-node.color-purple {
+        border-left: 5px solid #8B5CF6;
+    }
+    
+    .topic-node.color-pink {
+        border-left: 5px solid #EC4899;
+    }
+    
+    .topic-node.color-cyan {
+        border-left: 5px solid #06B6D4;
+    }
+    
+    .topic-node.color-orange {
+        border-left: 5px solid #F97316;
+    }
+    
+    svg.connections {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    
+    .view-all-btn {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    
+    .view-all-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+    }
+</style>
+
+{% for area_data in areas_with_topics %}
+<div class="card rounded-xl p-8 mb-12">
+    <h2 class="text-2xl font-bold text-blue-300 mb-6 text-center">{{ area_data.area.name }}</h2>
+    
+    <div class="mind-map-container" id="map-{{ area_data.area.id }}" data-area-id="{{ area_data.area.id }}">
+        <svg class="connections" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+        </svg>
+        
+        <div class="central-topic">
+            {{ area_data.area.name.split(',')[0] }}
+        </div>
+        
+        {% set color_classes = ['color-red', 'color-blue', 'color-green', 'color-yellow', 'color-purple', 'color-pink', 'color-cyan', 'color-orange'] %}
+        {% set positions = [
+            {'x': '70%', 'y': '10%'},
+            {'x': '85%', 'y': '25%'},
+            {'x': '90%', 'y': '45%'},
+            {'x': '85%', 'y': '65%'},
+            {'x': '70%', 'y': '80%'},
+            {'x': '50%', 'y': '87%'},
+            {'x': '30%', 'y': '80%'},
+            {'x': '15%', 'y': '65%'},
+            {'x': '10%', 'y': '45%'},
+            {'x': '15%', 'y': '25%'},
+            {'x': '30%', 'y': '10%'},
+            {'x': '50%', 'y': '5%'}
+        ] %}
+        
+        {% for topic in area_data.topics[:12] %}
+            {% set pos = positions[loop.index0 % positions|length] %}
+            {% set color_class = color_classes[loop.index0 % color_classes|length] %}
+            
+            <a href="/topic/{{ topic.id }}" 
+               class="topic-node {{ color_class }}" 
+               style="left: {{ pos.x }}; top: {{ pos.y }}; transform: translate(-50%, -50%);"
+               title="{{ topic.title }}"
+               data-index="{{ loop.index0 }}">
+                {{ topic.title }}
+            </a>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-8 text-center">
+        <a href="/area/{{ area_data.area.id }}" 
+           class="inline-block view-all-btn text-white px-8 py-3 rounded-lg transition transform hover:scale-105 shadow-lg">
+            Ver todos os {{ area_data.topics|length }} tópicos →
+        </a>
+    </div>
+</div>
+{% endfor %}
+
+<div class="mt-12 card rounded-xl p-6 border border-blue-700">
+    <h3 class="text-xl font-bold text-blue-300 mb-3">💡 Como usar os Mapas Mentais</h3>
+    <ul class="space-y-2 text-gray-400">
+        <li>✓ <strong class="text-blue-400">Clique nos tópicos</strong> para acessar o conteúdo completo de cada tema</li>
+        <li>✓ <strong class="text-blue-400">Visão geral</strong>: Use os mapas para entender a estrutura de cada área do ENEM</li>
+        <li>✓ <strong class="text-blue-400">Conexões</strong>: Identifique relações entre diferentes assuntos</li>
+        <li>✓ <strong class="text-blue-400">Cores</strong>: As cores ajudam a organizar e memorizar os conteúdos</li>
+        <li>✓ <strong class="text-blue-400">Revisão</strong>: Revise os mapas antes das provas para consolidar conhecimento</li>
+    </ul>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
+    
+    document.querySelectorAll('.mind-map-container').forEach(container => {
+        const svg = container.querySelector('svg.connections');
+        const topics = container.querySelectorAll('.topic-node');
+        const centerX = 50;
+        const centerY = 50;
+        const radius = 40;
+        
+        topics.forEach((topic, index) => {
+            const angle = (index * 360 / topics.length) * Math.PI / 180;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            const color = colors[index % colors.length];
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const controlX = centerX + (radius * 0.6) * Math.cos(angle);
+            const controlY = centerY + (radius * 0.6) * Math.sin(angle);
+            path.setAttribute('d', `M ${centerX} ${centerY} Q ${controlX} ${controlY}, ${x} ${y}`);
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '0.5');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '0.6');
+            
+            svg.appendChild(path);
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', '0.8');
+            circle.setAttribute('fill', color);
+            
+            svg.appendChild(circle);
+        });
+    });
+});
+</script>
+{% endblock %}

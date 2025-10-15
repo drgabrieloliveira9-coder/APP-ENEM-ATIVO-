@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Resumos - ENEM 2025 StudyApp{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-white mb-8 glow-text">📚 Biblioteca de Resumos</h1>
+
+<div class="card rounded-xl p-6 mb-8">
+    <form method="GET" class="flex gap-4">
+        <input type="text" name="search" placeholder="Buscar resumos..." value="{{ search }}" 
+               class="flex-1 px-4 py-2 bg-slate-900 border border-blue-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        
+        <select name="area" class="px-4 py-2 bg-slate-900 border border-blue-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Todas as áreas</option>
+            {% for area in areas %}
+            <option value="{{ area.id }}" {% if area_filter == area.id|string %}selected{% endif %}>{{ area.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">Buscar</button>
+        <a href="/resumos" class="bg-slate-700 text-gray-300 px-6 py-2 rounded-lg hover:bg-slate-600 transition-colors font-semibold">Limpar</a>
+    </form>
+</div>
+
+<div class="space-y-4">
+    {% for resumo in resumos %}
+    <div class="card rounded-xl p-6 group">
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <span class="text-xs text-blue-400 font-semibold">{{ resumo.area_name }}</span>
+                <h3 class="text-xl font-bold text-blue-300 mt-1 group-hover:text-blue-400 transition-colors">{{ resumo.title }}</h3>
+                <p class="text-gray-400 mt-2">{{ resumo.summary }}</p>
+                
+                {% if resumo.bullets %}
+                <ul class="mt-3 space-y-1">
+                    {% for bullet in resumo.bullets.split('|')[:3] %}
+                    <li class="text-sm text-gray-400">• {{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            
+            {% if resumo.topic_id %}
+            <a href="/topic/{{ resumo.topic_id }}" class="ml-4 btn-primary text-white px-4 py-2 rounded-lg">
+                Ver detalhes →
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not resumos %}
+<div class="text-center py-12">
+    <p class="text-gray-500">Nenhum resumo encontrado.</p>
+</div>
+{% endif %}
+{% endblock %}

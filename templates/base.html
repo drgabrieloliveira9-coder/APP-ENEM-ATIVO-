@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ENEM 2025 StudyApp{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0a0e1a;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(30, 64, 175, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(29, 78, 216, 0.15) 0px, transparent 50%);
+        }
+        
+        .gradient-nav {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            border-bottom: 2px solid #1e40af;
+            box-shadow: 0 10px 30px rgba(30, 64, 175, 0.3);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #60a5fa;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #1e40af;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen">
+    <nav class="gradient-nav sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="/" class="text-2xl font-bold glow-text hover:text-blue-400 transition-colors">📚 ENEM 2025 StudyApp</a>
+                <div class="flex space-x-6">
+                    <a href="/" class="nav-link">Início</a>
+                    <a href="/resumos" class="nav-link">Resumos</a>
+                    <a href="/exercicios" class="nav-link">Exercícios</a>
+                    <a href="/quiz" class="nav-link">Quiz</a>
+                    <a href="/mapas" class="nav-link">Mapas Mentais</a>
+                    <a href="/redacao" class="nav-link">Redação</a>
+                    <a href="/cronograma" class="nav-link">Cronograma</a>
+                    <a href="/admin" class="nav-link">Admin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg border {% if category == 'error' %}bg-red-950/50 border-red-500 text-red-300{% else %}bg-green-950/50 border-green-500 text-green-300{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-slate-950 border-t border-blue-900 mt-16 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-300">© 2025 ENEM StudyApp - Preparação completa para o ENEM 2025</p>
+            <p class="text-sm text-gray-500 mt-2">Desenvolvido com Flask + Tailwind CSS</p>
+            <p class="text-sm text-gray-400 mt-3 font-semibold">👨‍💻 Desenvolvido por: <span class="text-blue-400">João Layon</span> e <span class="text-blue-400">Paulo Davi</span></p>
+            <p class="text-xs text-gray-500 mt-1">Desenvolvedores Full Stack</p>
+        </div>
+    </footer>
+</body>
+</html>
